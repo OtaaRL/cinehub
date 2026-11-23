@@ -1,0 +1,636 @@
+{
+  "info": {
+    "name": "CineHub",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://127.0.0.1:3000"
+    },
+    {
+      "key": "tokenUser",
+      "value": ""
+    },
+    {
+      "key": "tokenAdmin",
+      "value": ""
+    },
+    {
+      "key": "tokenBidon",
+      "value": "abc.def.ghi"
+    }
+  ],
+  "item": [
+    {
+      "name": "Sante API",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/"
+      }
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register user",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/register",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"alice\",\n  \"email\": \"alice@mail.fr\",\n  \"password\": \"alice123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login user",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"alice\",\n  \"password\": \"alice123\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "pm.collectionVariables.set('tokenUser', json.token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login admin",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"admin123\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "pm.collectionVariables.set('tokenAdmin', json.token);"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Films",
+      "item": [
+        {
+          "name": "Tous les films",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenUser}}"
+              }
+            ],
+            "url": "{{baseUrl}}/films"
+          }
+        },
+        {
+          "name": "Films a l affiche",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenUser}}"
+              }
+            ],
+            "url": "{{baseUrl}}/films/showing"
+          }
+        },
+        {
+          "name": "Detail film + seances",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenUser}}"
+              }
+            ],
+            "url": "{{baseUrl}}/films/1"
+          }
+        },
+        {
+          "name": "Creer film (admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenAdmin}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/films",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Matrix\",\n  \"description\": \"Un hacker decouvre la verite sur son monde.\",\n  \"duration\": 136,\n  \"genre\": \"Science-fiction\",\n  \"release_date\": \"1999-06-23\",\n  \"is_showing\": true\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "pm.collectionVariables.set('filmId', json.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Modifier film (admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenAdmin}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/films/{{filmId}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"genre\": \"Action\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Supprimer film (admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenAdmin}}"
+              }
+            ],
+            "url": "{{baseUrl}}/films/{{filmId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Rooms",
+      "item": [
+        {
+          "name": "Toutes les salles",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenUser}}"
+              }
+            ],
+            "url": "{{baseUrl}}/rooms"
+          }
+        },
+        {
+          "name": "Detail salle",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenUser}}"
+              }
+            ],
+            "url": "{{baseUrl}}/rooms/1"
+          }
+        },
+        {
+          "name": "Creer salle (admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenAdmin}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/rooms",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Salle 4\",\n  \"capacity\": 60\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "pm.collectionVariables.set('roomId', json.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Modifier salle (admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenAdmin}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/rooms/{{roomId}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"capacity\": 70\n}"
+            }
+          }
+        },
+        {
+          "name": "Supprimer salle (admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenAdmin}}"
+              }
+            ],
+            "url": "{{baseUrl}}/rooms/{{roomId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Screenings",
+      "item": [
+        {
+          "name": "Toutes les seances",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenUser}}"
+              }
+            ],
+            "url": "{{baseUrl}}/screenings"
+          }
+        },
+        {
+          "name": "Seances d un film",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenUser}}"
+              }
+            ],
+            "url": "{{baseUrl}}/screenings/film/1"
+          }
+        },
+        {
+          "name": "Detail seance",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenUser}}"
+              }
+            ],
+            "url": "{{baseUrl}}/screenings/1"
+          }
+        },
+        {
+          "name": "Creer seance (admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenAdmin}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/screenings",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"film\": 1,\n  \"room\": 2,\n  \"datetime\": \"2026-12-10 20:30:00\",\n  \"price\": 9.5\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "pm.collectionVariables.set('screeningId', json.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Modifier seance (admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenAdmin}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/screenings/{{screeningId}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"price\": 10\n}"
+            }
+          }
+        },
+        {
+          "name": "Supprimer seance (admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenAdmin}}"
+              }
+            ],
+            "url": "{{baseUrl}}/screenings/{{screeningId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reservations",
+      "item": [
+        {
+          "name": "Reserver (user)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenUser}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/reservations",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"screening\": 1,\n  \"seats\": 2\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "pm.collectionVariables.set('reservationId', json.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Mes reservations",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenUser}}"
+              }
+            ],
+            "url": "{{baseUrl}}/reservations/me"
+          }
+        },
+        {
+          "name": "Toutes les reservations (admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenAdmin}}"
+              }
+            ],
+            "url": "{{baseUrl}}/reservations"
+          }
+        },
+        {
+          "name": "Reservations d une seance (admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenAdmin}}"
+              }
+            ],
+            "url": "{{baseUrl}}/reservations/screening/1"
+          }
+        },
+        {
+          "name": "Annuler ma reservation",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenUser}}"
+              }
+            ],
+            "url": "{{baseUrl}}/reservations/{{reservationId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Liste des users (admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenAdmin}}"
+              }
+            ],
+            "url": "{{baseUrl}}/users"
+          }
+        },
+        {
+          "name": "Mon profil",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenUser}}"
+              }
+            ],
+            "url": "{{baseUrl}}/users/me"
+          }
+        },
+        {
+          "name": "Detail user",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenUser}}"
+              }
+            ],
+            "url": "{{baseUrl}}/users/1"
+          }
+        },
+        {
+          "name": "Modifier mon email",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenUser}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/users/2",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"alice2@mail.fr\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tests de securite",
+      "item": [
+        {
+          "name": "Sans token -> 401",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/films"
+          }
+        },
+        {
+          "name": "Token invalide -> 403",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenBidon}}"
+              }
+            ],
+            "url": "{{baseUrl}}/films"
+          }
+        },
+        {
+          "name": "User sur route admin -> 403",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenUser}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/films",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Test\",\n  \"duration\": 90\n}"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
